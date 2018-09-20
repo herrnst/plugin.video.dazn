@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import simple_requests as requests
+from . import simple_requests as requests
 
 class Playback:
 

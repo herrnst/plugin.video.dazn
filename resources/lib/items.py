@@ -79,7 +79,7 @@ class Items:
         listitem.setProperty('inputstream.adaptive.manifest_type', 'mpd')
         listitem.setProperty('inputstream.adaptive.license_type', 'com.widevine.alpha')
         listitem.setProperty('inputstream.adaptive.license_key', '{0}&{1}&_widevineChallenge=B{{SSM}}|||JBlicense'.format(item.LaUrl, item.LaUrlAuthParam))
-        if not ('dc1' or 'dc2') in path:
+        if not any(x in path for x in ['dc1', 'dc2']):
             listitem.setProperty('inputstream.adaptive.manifest_update_parameter', 'full')
         if context:
             listitem.setInfo('video', {'Title': name})
