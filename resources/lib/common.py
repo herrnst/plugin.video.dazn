@@ -234,7 +234,7 @@ class Common:
             self.log("[{0}] cache error: {1}".format(self.addon_id, e))
 
     def initcap(self, text):
-        if text.isupper():
+        if text.isupper() and len(text) > 3:
             text = string.capwords(text)
             text = text.replace('Dazn', 'DAZN')
         return text
