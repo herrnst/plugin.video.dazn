@@ -149,6 +149,7 @@ class Client:
         r = self.request(self.SIGNOUT)
         self.TOKEN = ''
         self.plugin.set_setting('token', self.TOKEN)
+        self.plugin.set_setting('mpx', '')
 
     def refreshToken(self):
         self.HEADERS['Authorization'] = 'Bearer ' + self.TOKEN

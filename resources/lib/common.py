@@ -40,6 +40,7 @@ class Common:
         self.startup = self.addon.getSetting('startup') == 'true'
         self.select_cdn = self.addon.getSetting('select_cdn') == 'true'
         self.preferred_cdn = self.addon.getSetting('preferred_cdn')
+        self.max_bw = self.addon.getSetting('max_bw')
 
     def utfenc(self, text):
         result = text
