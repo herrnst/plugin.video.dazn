@@ -42,23 +42,15 @@ class Common:
         self.preferred_cdn = self.addon.getSetting('preferred_cdn')
         self.max_bw = self.addon.getSetting('max_bw')
 
-    def utfenc(self, text):
-        result = text
-        if isinstance(text, unicode):
-            result = text.encode('utf-8')
-        return result
+    def log(self, msg):
+        xbmc.log(str(msg), xbmc.LOGDEBUG)
 
-    def utfdec(self, text):
-        result = text
-        if isinstance(text, str):
-            result = text.decode('utf-8')
-        return result
+    def build_url(self, query):
+        return self.addon_url + '?' + urllib.urlencode(query)
 
-    def b64dec(self, data):
-        missing_padding = len(data) % 4
-        if missing_padding != 0:
-            data += b'='* (4 - missing_padding)
-        return base64.b64decode(data)
+    def gui_language(self):
+        language = xbmc.getLanguage().split(' (')[0]
+        return xbmc.convertLanguage(language, xbmc.ISO_639_1)
 
     def get_addon(self):
         return self.addon
@@ -86,8 +78,29 @@ class Common:
     def dialog_ok(self, msg):
         self.get_dialog().ok(self.addon_name, msg)
 
+    def dialog_yesno(self, msg):
+        return self.get_dialog().yesno(self.addon_name, msg)
+
     def notification(self, title, msg, thumb, duration):
         self.get_dialog().notification(title, msg, thumb, duration)
+
+    def utfenc(self, text):
+        result = text
+        if isinstance(text, unicode):
+            result = text.encode('utf-8')
+        return result
+
+    def utfdec(self, text):
+        result = text
+        if isinstance(text, str):
+            result = text.decode('utf-8')
+        return result
+
+    def b64dec(self, data):
+        missing_padding = len(data) % 4
+        if missing_padding != 0:
+            data += b'='* (4 - missing_padding)
+        return base64.b64decode(data)
 
     def get_resource(self, text, prefix=''):
         data = self.get_cache('ResourceStrings')
@@ -110,15 +123,8 @@ class Common:
                 }
         return {}
 
-    def log(self, msg):
-        xbmc.log(str(msg), xbmc.LOGDEBUG)
-
-    def build_url(self, query):
-        return self.addon_url + '?' + urllib.urlencode(query)
-
-    def gui_language(self):
-        language = xbmc.getLanguage().split(' (')[0]
-        return xbmc.convertLanguage(language, xbmc.ISO_639_1)
+    def logout(self):
+        return self.dialog_yesno(self.get_resource('signout_body'))
 
     def time_now(self):
         return datetime.datetime.now().strftime(self.time_format)
