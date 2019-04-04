@@ -74,7 +74,9 @@ class Client:
         self.PARAMS['platform'] = 'web'
         self.plugin.cache(self.RESOURCES, self.content_data(self.RESOURCES))
 
-    def playback_data(self, id_):
+    def playback_data(self, id_, pin):
+        if self.plugin.validate_pin(pin):
+            self.HEADERS['x-age-verification-pin'] = pin
         self.HEADERS['Authorization'] = 'Bearer ' + self.TOKEN
         self.PARAMS['LanguageCode'] = self.LANGUAGE
         self.PARAMS['AssetId'] = id_
@@ -84,8 +86,8 @@ class Client:
         self.PARAMS['PlayReadyInitiator'] = 'false'
         return self.request(self.PLAYBACK)
 
-    def playback(self, id_):
-        data = self.playback_data(id_)
+    def playback(self, id_, pin):
+        data = self.playback_data(id_, pin)
         if data.get('odata.error', None):
             self.errorHandler(data)
             if self.TOKEN:
@@ -118,7 +120,7 @@ class Client:
             self.TOKEN = auth['Token']
             self.MPX = self.plugin.get_mpx(self.TOKEN)
         else:
-            if result == 'HardOffer':
+            if result in ['HardOffer', 'SignedInInactive']:
                 self.plugin.dialog_ok(self.plugin.get_resource('error_10101'))
             self.signOut()
         self.plugin.set_setting('token', self.TOKEN)

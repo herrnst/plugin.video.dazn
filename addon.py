@@ -22,6 +22,7 @@ def router(paramstring):
     title = args.get('title', [''])[0]
     id_ = args.get('id', ['home'])[0]
     params = args.get('params', [''])[0]
+    verify_age = args.get('verify_age', [False])[0]
 
     if mode == 'rails':
         parser.rails_items(client.rails(id_, params), id_)
@@ -33,9 +34,9 @@ def router(paramstring):
             date = plugin.get_date()
         parser.epg_items(client.epg(date), date, mode)
     elif mode == 'play':
-        parser.playback(client.playback(id_))
+        parser.playback(client.playback(id_, plugin.youth_protection_pin(verify_age)))
     elif mode == 'play_context':
-        parser.playback(client.playback(id_), title, True)
+        parser.playback(client.playback(id_, plugin.youth_protection_pin(verify_age)), title, True)
     elif mode == 'logout':
         if plugin.logout():
             client.signOut()

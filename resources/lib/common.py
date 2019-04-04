@@ -22,7 +22,7 @@ class Common:
         self.api_base = 'https://isl.dazn.com/misl/'
         self.time_format = '%Y-%m-%dT%H:%M:%SZ'
         self.date_format = '%Y-%m-%d'
-        self.portability_list = ['AT', 'DE', 'IT']
+        self.portability_list = ['AT', 'DE', 'IT', 'ES']
 
         self.addon = xbmcaddon.Addon()
         self.addon_handle = addon_handle
@@ -254,3 +254,15 @@ class Common:
                 self.set_setting('preferred_cdn', self.preferred_cdn)
                 self.set_setting('select_cdn', 'false')
         return self.preferred_cdn
+
+    def validate_pin(self, pin):
+        result = False
+        if len(pin) == 4 and pin.isdigit():
+            result = True
+        return result
+
+    def youth_protection_pin(self, verify_age):
+        pin = ''
+        if verify_age:
+            pin = self.get_dialog().input(self.get_resource('youthProtectionTV_verified_body'), type=xbmcgui.INPUT_ALPHANUM, option=xbmcgui.ALPHANUM_HIDE_INPUT)
+        return pin

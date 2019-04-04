@@ -7,7 +7,7 @@
     <extension point="xbmc.python.pluginsource" library="addon.py">
         <provides>video</provides>
     </extension>
-	<extension point="xbmc.service" library="startup.py" start="startup"/>
+	<extension point="xbmc.service" library="startup.py"/>
     <extension point="xbmc.addon.metadata">
         <reuselanguageinvoker>true</reuselanguageinvoker>
         <news>
