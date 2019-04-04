@@ -240,10 +240,28 @@ class Common:
         except Exception as e:
             self.log("[{0}] cache error: {1}".format(self.addon_id, e))
 
+    def split_on_uppercase(self, s, keep_contiguous=False):
+        string_length = len(s)
+        is_lower_around = (lambda: s[i-1].islower() or 
+                           string_length > (i + 1) and s[i + 1].islower())
+
+        start = 0
+        parts = []
+        for i in range(1, string_length):
+            if s[i].isupper() and (not keep_contiguous or is_lower_around()):
+                parts.append(s[start: i])
+                start = i
+        parts.append(s[start:])
+
+        return parts
+
     def initcap(self, text):
         if text.isupper() and len(text) > 3:
             text = string.capwords(text)
             text = text.replace('Dazn', 'DAZN')
+        elif not text.isupper() and not ' ' in text:
+            parts = self.split_on_uppercase(text, True)
+            text = ' '.join(parts)
         return text
 
     def get_cdn(self, cdns):
