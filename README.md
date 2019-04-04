@@ -1,5 +1,8 @@
 # DAZN Video Plugin for Kodi (plugin.video.dazn)
- 
+
+## Note
+No further development. Last version: 1.3.1
+
 ## Disclaimer
 This plugin is not officially commisioned/supported by DAZN.
 Any trademarks used belong to their owning companies & organisations.
