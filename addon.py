@@ -22,7 +22,7 @@ def router(paramstring):
     title = args.get('title', [''])[0]
     id_ = args.get('id', ['home'])[0]
     params = args.get('params', [''])[0]
-    verify_age = args.get('verify_age', [False])[0]
+    verify_age = True if args.get('verify_age', [''])[0] == 'True' else False
 
     if mode == 'rails':
         parser.rails_items(client.rails(id_, params), id_)
