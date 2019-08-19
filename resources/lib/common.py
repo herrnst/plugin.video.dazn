@@ -284,3 +284,11 @@ class Common:
         if verify_age:
             pin = self.get_dialog().input(self.get_resource('youthProtectionTV_verified_body'), type=xbmcgui.INPUT_ALPHANUM, option=xbmcgui.ALPHANUM_HIDE_INPUT)
         return pin
+
+    def is_valid_uuid(self, val):
+        result = False
+        try:
+            uuid.UUID(str(val))
+            return True
+        except ValueError:
+            return result
