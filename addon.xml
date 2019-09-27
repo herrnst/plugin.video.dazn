@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.dazn" version="1.3.4 name="DAZN" provider-name="Jin">
+<addon id="plugin.video.dazn" version="1.3.4" name="DAZN" provider-name="Jin">
     <requires>
         <import addon="xbmc.python" version="2.26.0"/>
-        <import addon="script.module.inputstreamhelper" version="0.3.5"/>
+        <import addon="script.module.inputstreamhelper" version="0.4.2"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="addon.py">
         <provides>video</provides>
@@ -11,7 +11,7 @@
     <extension point="xbmc.addon.metadata">
         <reuselanguageinvoker>true</reuselanguageinvoker>
         <news>
-- Fix Guids in Homescreen
+- Reference InputStream Helper in settings
         </news>
         <assets>
             <icon>resources/icon.png</icon>
