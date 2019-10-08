@@ -14,7 +14,7 @@ class Rails:
         self.item['plot'] = id_
         if self.plugin.is_valid_uuid(id_):
             rail = Client(self.plugin).rail(id_)
-            self.item['title'] = rail.get('Title', False)
+            self.item['title'] = self.plugin.utfenc(rail.get('Title', False))
             self.item['plot'] = self.item['title']
         else:
             self.item['title'] = self.plugin.get_resource(id_, prefix='browseui_railHeader')
