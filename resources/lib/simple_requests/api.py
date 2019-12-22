@@ -1,24 +1,34 @@
+from __future__ import unicode_literals
 __author__ = 'bromix'
 
-import urllib
-import urllib2
-from StringIO import StringIO
+import sys
+if (sys.version_info[0] == 2):
+    from urllib2 import build_opener, HTTPDefaultErrorHandler, HTTPError, HTTPRedirectHandler, HTTPSHandler, Request
+    from urllib import addinfourl, quote, urlencode
+    from StringIO import StringIO
+else:
+    from urllib.request import build_opener, HTTPDefaultErrorHandler, HTTPRedirectHandler, HTTPSHandler, Request
+    from urllib.response import addinfourl
+    from urllib.parse import quote, urlencode
+    from urllib.error import HTTPError
+    from io import StringIO
 import gzip
+from kodi_six.utils import py2_decode, py2_encode
 
 import json as real_json
 
 
-class ErrorHandler(urllib2.HTTPDefaultErrorHandler):
+class ErrorHandler(HTTPDefaultErrorHandler):
     def http_error_default(self, req, fp, code, msg, hdrs):
-        infourl = urllib.addinfourl(fp, hdrs, req.get_full_url())
+        infourl = addinfourl(fp, hdrs, req.get_full_url())
         infourl.status = code
         infourl.code = code
         return infourl
 
 
-class NoRedirectHandler(urllib2.HTTPRedirectHandler):
+class NoRedirectHandler(HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
-        infourl = urllib.addinfourl(fp, headers, req.get_full_url())
+        infourl = addinfourl(fp, headers, req.get_full_url())
         infourl.status = code
         infourl.code = code
         return infourl
@@ -40,8 +50,15 @@ class Response():
         return self.text
 
     def json(self):
-        return real_json.loads(self.text)
+        # ensure json loads str
+        s = self.text
+        if isinstance(s, bytes):
+            s = s.decode('utf-8')
+        return real_json.loads(s)
 
+    # py2 get lowercase, py3 no
+    def header(self, header, default=''):
+        return self.headers.get(header, self.headers.get(header.lower(), default))
 
 def _request(method, url,
              params=None,
@@ -61,7 +78,7 @@ def _request(method, url,
     if not headers:
         headers = {}
 
-    url = urllib.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
+    url = quote(url, safe="%/:=&?~#+!$,;'@()*[]")
 
     handlers = []
 
@@ -73,28 +90,28 @@ def _request(method, url,
         ssl_context = ssl.create_default_context()
         ssl_context.check_hostname = False
         ssl_context.verify_mode = ssl.CERT_NONE
-        handlers.append(urllib2.HTTPSHandler(context=ssl_context))
+        handlers.append(HTTPSHandler(context=ssl_context))
 
-    # handlers.append(urllib2.HTTPCookieProcessor())
+    # handlers.append(HTTPCookieProcessor())
     # handlers.append(ErrorHandler)
     if not allow_redirects:
         handlers.append(NoRedirectHandler)
-    opener = urllib2.build_opener(*handlers)
+    opener = build_opener(*handlers)
 
     query = ''
     if params:
         for key in params:
             value = params[key]
             if isinstance(value, str):
-                value = value.decode('utf-8')
-            params[key] = value.encode('utf-8')
-        query = urllib.urlencode(params)
+                value = py2_decode(value)
+            params[key] = py2_decode(value)
+        query = urlencode(params)
     if query:
         url += '?%s' % query
-    request = urllib2.Request(url)
+    request = Request(url)
     if headers:
         for key in headers:
-            request.add_header(key, str(unicode(headers[key]).encode('utf-8')))
+            request.add_header(key, headers[key])
     if data or json:
         if headers.get('Content-Type', '').startswith('application/x-www-form-urlencoded') and data:
             # transform a string into a map of values
@@ -110,7 +127,7 @@ def _request(method, url,
                 data[key] = data[key].encode('utf-8')
 
             # urlencode
-            request.data = urllib.urlencode(data)
+            request.data = urlencode(data, 'utf-8')
         elif headers.get('Content-Type', '').startswith('application/json') and data:
             request.data = real_json.dumps(data).encode('utf-8')
         elif json:
@@ -129,12 +146,12 @@ def _request(method, url,
     response = None
     try:
         response = opener.open(request)
-    except urllib2.HTTPError as e:
+    except HTTPError as e:
         # HTTPError implements addinfourl, so we can use the exception to construct a response
-        if isinstance(e, urllib2.addinfourl):
+        if isinstance(e, addinfourl):
             response = e
     except Exception as e:
-        result.text = e
+        result.text = py2_decode(e)
         return result
 
     # process response
@@ -145,9 +162,9 @@ def _request(method, url,
     elif response.headers.get('Content-Encoding', '').startswith('gzip'):
         buf = StringIO(response.read())
         f = gzip.GzipFile(fileobj=buf)
-        result.text = f.read()
+        result.text = py2_decode(f.read())
     else:
-        result.text = response.read()
+        result.text = py2_decode(response.read())
 
     return result
 

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
 import base64
 import datetime
 import hashlib
@@ -7,12 +8,14 @@ import json
 import os
 import string
 import time
-import urllib
+import sys
+PY2 = sys.version_info[0] == 2
+if PY2:
+    from urllib import urlencode
+else:
+    from urllib.parse import urlencode
 import uuid
-import xbmc
-import xbmcaddon
-import xbmcgui
-import xbmcvfs
+from kodi_six import xbmc, xbmcaddon, xbmcgui, xbmcvfs
 import _strptime
 from inputstreamhelper import Helper
 
@@ -43,10 +46,10 @@ class Common:
         self.max_bw = self.addon.getSetting('max_bw')
 
     def log(self, msg):
-        xbmc.log(str(msg), xbmc.LOGDEBUG)
+        xbmc.log(msg, xbmc.LOGDEBUG)
 
     def build_url(self, query):
-        return self.addon_url + '?' + urllib.urlencode(query)
+        return self.addon_url + '?' + urlencode(query, 'utf-8')
 
     def gui_language(self):
         language = xbmc.getLanguage().split(' (')[0]
@@ -86,13 +89,13 @@ class Common:
 
     def utfenc(self, text):
         result = text
-        if isinstance(text, unicode):
+        if PY2 and isinstance(text, unicode):
             result = text.encode('utf-8')
         return result
 
     def utfdec(self, text):
         result = text
-        if isinstance(text, str):
+        if PY2 and isinstance(text, str):
             result = text.decode('utf-8')
         return result
 
@@ -106,6 +109,7 @@ class Common:
         data = self.get_cache('ResourceStrings')
         if data.get('Strings'):
             strings = data['Strings']
+            text = self.utfdec(text)
             try:
                 text = strings['{0}{1}'.format(prefix, text.replace(' ', ''))]
             except KeyError:
@@ -156,7 +160,7 @@ class Common:
             time.sleep(1)
             mac_addr = xbmc.getInfoLabel('Network.MacAddress')
         if ":" in mac_addr:
-            device_id = str(uuid.UUID(hashlib.md5(str(mac_addr.decode("utf-8"))).hexdigest()))
+            device_id = str(uuid.UUID(hashlib.md5(mac_addr.encode("utf-8")).hexdigest()))
         elif self.get_setting('device_id'):
             device_id = self.get_setting('device_id')
         else:
@@ -203,7 +207,11 @@ class Common:
         return date
 
     def get_mpx(self, token):
-        token_data = json.loads(self.b64dec(token.split('.')[1]))
+        # ensure json loads str
+        s = self.b64dec(token.split('.')[1])
+        if isinstance(s, bytes):
+            s = s.decode('utf-8')
+        token_data = json.loads(s)
         return token_data['mpx']
 
     def language(self, language, languages):

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import xbmc
-import xbmcgui
-import xbmcplugin
+from kodi_six import xbmc, xbmcgui, xbmcplugin
 
 class Items:
 
