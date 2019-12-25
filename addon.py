@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import urlparse
+if (sys.version_info[0] == 2):
+    from urlparse import urlparse, parse_qs
+else:
+    from urllib.parse import urlparse, parse_qs
 from resources.lib.common import Common
 from resources.lib.client import Client
 from resources.lib.parser import Parser
@@ -17,7 +20,7 @@ client = Client(plugin)
 parser = Parser(plugin)
 
 def router(paramstring):
-    args = dict(urlparse.parse_qs(paramstring))
+    args = dict(parse_qs(paramstring))
     mode = args.get('mode', ['rails'])[0]
     title = args.get('title', [''])[0]
     id_ = args.get('id', ['home'])[0]

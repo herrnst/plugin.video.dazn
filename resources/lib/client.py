@@ -197,11 +197,11 @@ class Client:
         else:
             r = requests.get(url, headers=self.HEADERS, params=self.PARAMS)
 
-        if r.headers.get('content-type', '').startswith('application/json'):
+        if r.header('Content-Type', '').startswith('application/json'):
             return r.json()
         else:
             if not r.status_code == 204:
-                self.plugin.log('[{0}] error: {1} ({2}, {3})'.format(self.plugin.addon_id, url, str(r.status_code), r.headers.get('content-type', '')))
+                self.plugin.log('[{0}] error: {1} ({2}, {3})'.format(self.plugin.addon_id, url, str(r.status_code), r.header('Content-Type', '')))
             if r.status_code == -1:
                 self.plugin.log('[{0}] error: {1}'.format(self.plugin.addon_id, r.text))
             return {}

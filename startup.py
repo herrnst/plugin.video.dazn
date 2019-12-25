@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import xbmcaddon
+from kodi_six import xbmcaddon
 
 addon = xbmcaddon.Addon()
 
