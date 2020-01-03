@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+from kodi_six.utils import py2_encode
+
+
 class Context:
+
 
     def __init__(self, plugin):
         self.cm = []
         self.plugin = plugin
+
 
     def epg_date(self):
         d = {
@@ -14,36 +20,39 @@ class Context:
         self.cm.append((self.plugin.get_string(30230), 'ActivateWindow(Videos, {0})'.format(self.plugin.build_url(d))))
         return self.cm
 
+
     def highlights(self, item, mode):
         d = {
             'mode': mode,
-            'title': self.plugin.utfenc(item['title']),
+            'title': py2_encode(item['title']),
             'id': item.get('id', ''),
-            'params': item.get('params','')
+            'params': item.get('params', '')
         }
         self.cm.append((self.plugin.get_string(30231), 'Container.Update({0})'.format(self.plugin.build_url(d))))
         return self.cm
 
+
     def related(self, cm_items):
         for i in cm_items:
-            type_ = self.plugin.get_resource('{0}{1}Title'.format(i['type'][0].lower(), i['type'][1:]), 'browseui_')
+            type_ = self.plugin.get_resource('{0}{1}Title'.format(i['type'][0].lower(), i['type'][1:]), 'browseui_').get('text')
             if type_.endswith('Title'):
                 type_ = i['type']
             d = {
                 'mode': 'play_context',
-                'title': self.plugin.utfenc(i['title']),
+                'title': py2_encode(i['title']),
                 'id': i.get('id', ''),
-                'params': i.get('params','')
+                'params': i.get('params', '')
             }
             self.cm.append((type_, 'XBMC.RunPlugin({0})'.format(self.plugin.build_url(d))))
         return self.cm
+
 
     def goto(self, item):
         if item.get('sport', None):
             i = item['sport']
             d = {
                 'mode': 'rails',
-                'title': self.plugin.utfenc(i['Title']),
+                'title': py2_encode(i['Title']),
                 'id': 'sport',
                 'params': i['Id']
             }
@@ -53,7 +62,7 @@ class Context:
             i = item['competition']
             d = {
                 'mode': 'rails',
-                'title': self.plugin.utfenc(i['Title']),
+                'title': py2_encode(i['Title']),
                 'id': 'competition',
                 'params': i['Id']
             }

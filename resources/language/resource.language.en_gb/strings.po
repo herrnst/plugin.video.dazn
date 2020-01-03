@@ -64,10 +64,6 @@ msgctxt "#30024"
 msgid "Preferred CDN"
 msgstr ""
 
-msgctxt "#30025"
-msgid "InputStream Helper Settings..."
-msgstr ""
-
 msgctxt "#30214"
 msgid "Switch to Sport"
 msgstr ""

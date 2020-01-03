@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+
+
 class Tiles:
+
 
     def __init__(self, plugin, i):
         self.item = {}
         self.plugin = plugin
-        self.title = self.plugin.utfenc(i['Title'])
+        self.title = i['Title']
         self.subtitle = i.get('SubTitle', '')
-        self.description = self.plugin.utfenc(i['Description'])
+        self.description = i['Description']
         self.start = self.plugin.utc2local(i.get('Start', ''))
         self.end = self.plugin.utc2local(i.get('End', ''))
         self.now = self.plugin.time_now()
@@ -28,6 +32,7 @@ class Tiles:
             self.params = i['EventId']
         self.update_item(i)
 
+
     def add_duration(self):
         if 'ComingUp' in self.type:
             self.end = self.start
@@ -35,10 +40,11 @@ class Tiles:
         elif 'Live' in self.type:
             self.start = self.now
         if self.start and self.end:
-            self.item['duration'] = self.plugin.timedelta_total_seconds(self.plugin.time_stamp(self.end)-self.plugin.time_stamp(self.start))
+            self.item['duration'] = self.plugin.timedelta_total_seconds(self.plugin.time_stamp(self.end) - self.plugin.time_stamp(self.start))
+
 
     def add_thumb(self, i):
-        url = self.plugin.api_base+'v2/image?id={0}&Quality=95&Width={1}&Height={2}&ResizeAction=fill&VerticalAlignment=top&Format={3}'
+        url = self.plugin.api_base + 'v2/image?id={0}&Quality=95&Width={1}&Height={2}&ResizeAction=fill&VerticalAlignment=top&Format={3}'
         image = i.get('Image', '')
         if image:
             if self.type == 'Navigation':
@@ -52,6 +58,7 @@ class Tiles:
         promo = i.get('PromoImage', '')
         if promo:
             self.item['thumb'] = url.format(promo['Id'], '720', '270', promo['ImageMimeType'])
+
 
     def update_item(self, i):
         self.item['mode'] = self.mode
@@ -69,9 +76,9 @@ class Tiles:
 
         if 'Epg' in i.get('Id', ''):
             if self.competition:
-                competition = self.plugin.utfenc(self.competition['Title'])
+                competition = self.competition['Title']
             if self.sport:
-                sport = self.plugin.utfenc(self.sport['Title'])
+                sport = self.sport['Title']
             time_ = self.start[11:][:5]
             if self.type == 'Live':
                 self.item['title'] = '[COLOR red]{0}[/COLOR] [COLOR dimgray]{1}[/COLOR] {2} [COLOR dimgray]{3}[/COLOR]'.format(time_, sport, self.title, competition)
@@ -82,7 +89,7 @@ class Tiles:
                 day = self.plugin.days(self.type, self.now, self.start)
                 sub_title = '{0} {1}'.format(day, self.start[11:][:5])
             else:
-                sub_title = self.plugin.get_resource('{0}{1}Title'.format(self.type[0].lower(), self.type[1:]), 'browseui_')
+                sub_title = self.plugin.get_resource('{0}{1}Title'.format(self.type[0].lower(), self.type[1:]), 'browseui_').get('text')
                 if sub_title.endswith('Title'):
                     sub_title = self.type
             if sub_title not in self.title:

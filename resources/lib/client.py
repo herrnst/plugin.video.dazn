@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from . import simple_requests as requests
+from __future__ import unicode_literals
+
+from .simple_requests.api import Request
+
 
 class Client:
+
 
     def __init__(self, plugin):
         self.plugin = plugin
@@ -37,17 +41,39 @@ class Client:
         self.PROFILE = self.plugin.api_base + 'v1/UserProfile'
         self.RESOURCES = self.plugin.api_base + 'v1/ResourceStrings'
 
+
     def content_data(self, url):
         data = self.request(url)
         if data.get('odata.error', None):
             self.errorHandler(data)
         return data
 
+
     def rails(self, id_, params=''):
         self.PARAMS['Country'] = self.COUNTRY
         self.PARAMS['groupId'] = id_
         self.PARAMS['params'] = params
-        return self.content_data(self.RAILS)
+        content_data = self.content_data(self.RAILS)
+        self.plugin.log('content_data = {0}'.format(content_data))
+        for rail in content_data.get('Rails', []):
+            id_ = rail.get('Id')
+            resource = self.plugin.get_resource(id_, prefix='browseui_railHeader')
+            title = resource.get('text')
+            self.plugin.log('resource = {0}'.format(resource))
+
+            if resource.get('found') == False:
+                rail_data = self.railFromCache(id_, params)
+                self.plugin.log("rail_data = {0}".format(rail_data))
+                title = rail_data.get('Title', rail.get('Id'))
+            else:
+                title = resource.get('text')
+            rail['Title'] = title
+        return content_data
+
+
+    def railFromCache(self, id_, params=''):
+        return self.plugin.railCache.cacheFunction(self.rail, id_, params)
+
 
     def rail(self, id_, params=''):
         self.PARAMS['LanguageCode'] = self.LANGUAGE
@@ -56,11 +82,13 @@ class Client:
         self.PARAMS['params'] = params
         return self.content_data(self.RAIL)
 
+
     def epg(self, params):
         self.PARAMS['languageCode'] = self.LANGUAGE
         self.PARAMS['country'] = self.COUNTRY
         self.PARAMS['date'] = params
         return self.content_data(self.EPG)
+
 
     def event(self, id_):
         self.PARAMS['LanguageCode'] = self.LANGUAGE
@@ -68,11 +96,13 @@ class Client:
         self.PARAMS['Id'] = id_
         return self.content_data(self.EVENT)
 
+
     def resources(self):
         self.PARAMS['languageCode'] = self.LANGUAGE
         self.PARAMS['region'] = self.COUNTRY
         self.PARAMS['platform'] = 'web'
         self.plugin.cache(self.RESOURCES, self.content_data(self.RESOURCES))
+
 
     def playback_data(self, id_):
         self.HEADERS['Authorization'] = 'Bearer ' + self.TOKEN
@@ -84,6 +114,7 @@ class Client:
         self.PARAMS['PlayReadyInitiator'] = 'false'
         return self.request(self.PLAYBACK)
 
+
     def playback(self, id_, pin):
         if self.plugin.validate_pin(pin):
             self.HEADERS['x-age-verification-pin'] = pin
@@ -93,7 +124,8 @@ class Client:
             if self.TOKEN:
                 data = self.playback_data(id_)
         return data
-            
+
+
     def userProfile(self):
         self.HEADERS['Authorization'] = 'Bearer ' + self.TOKEN
         data = self.request(self.PROFILE)
@@ -110,9 +142,11 @@ class Client:
             self.plugin.set_setting('country', self.COUNTRY)
             self.plugin.set_setting('portability', self.PORTABILITY)
 
+
     def setLanguage(self, languages):
         self.LANGUAGE = self.plugin.language(self.LANGUAGE, languages)
         self.resources()
+
 
     def setToken(self, auth, result):
         self.plugin.log('[{0}] signin: {1}'.format(self.plugin.addon_id, result))
@@ -121,10 +155,11 @@ class Client:
             self.MPX = self.plugin.get_mpx(self.TOKEN)
         else:
             if result in ['HardOffer', 'SignedInInactive', 'SignedInPaused']:
-                self.plugin.dialog_ok(self.plugin.get_resource('error_10101'))
+                self.plugin.dialog_ok(self.plugin.get_resource('error_10101').get('text'))
             self.signOut()
         self.plugin.set_setting('token', self.TOKEN)
         self.plugin.set_setting('mpx', self.MPX)
+
 
     def signIn(self):
         credentials = self.plugin.get_credentials()
@@ -141,7 +176,8 @@ class Client:
             else:
                 self.setToken(data['AuthToken'], data.get('Result', 'SignInError'))
         else:
-            self.plugin.dialog_ok(self.plugin.get_resource('signin_tvNoSignUpPerex'))
+            self.plugin.dialog_ok(self.plugin.get_resource('signin_tvNoSignUpPerex').get('text'))
+
 
     def signOut(self):
         self.HEADERS['Authorization'] = 'Bearer ' + self.TOKEN
@@ -152,6 +188,7 @@ class Client:
         self.TOKEN = ''
         self.plugin.set_setting('token', self.TOKEN)
         self.plugin.set_setting('mpx', '')
+
 
     def refreshToken(self):
         self.HEADERS['Authorization'] = 'Bearer ' + self.TOKEN
@@ -164,6 +201,7 @@ class Client:
             self.errorHandler(data)
         else:
             self.setToken(data['AuthToken'], data.get('Result', 'RefreshAccessTokenError'))
+
 
     def startUp(self):
         self.POST_DATA = {
@@ -188,27 +226,30 @@ class Client:
         else:
             self.TOKEN = ''
             self.plugin.log('[{0}] version: {1} region: {2}'.format(self.plugin.addon_id, self.plugin.addon_version, str(region)))
-            self.plugin.dialog_ok(self.plugin.get_resource('error_2003_notAvailableInCountry'))
+            self.plugin.dialog_ok(self.plugin.get_resource('error_2003_notAvailableInCountry').get('text'))
+
 
     def request(self, url):
+        requests = Request(self.plugin)
         if self.POST_DATA:
             r = requests.post(url, headers=self.HEADERS, data=self.POST_DATA, params=self.PARAMS)
-            self.POST_DATA  = {}
+            self.POST_DATA = {}
         else:
             r = requests.get(url, headers=self.HEADERS, params=self.PARAMS)
 
-        if r.header('Content-Type', '').startswith('application/json'):
+        if self.plugin.get_dict_value(r.headers, 'content-type').startswith('application/json'):
             return r.json()
         else:
             if not r.status_code == 204:
-                self.plugin.log('[{0}] error: {1} ({2}, {3})'.format(self.plugin.addon_id, url, str(r.status_code), r.header('Content-Type', '')))
+                self.plugin.log('[{0}] error: {1} ({2}, {3})'.format(self.plugin.addon_id, url, str(r.status_code), r.headers.get('Content-Type', '')))
             if r.status_code == -1:
                 self.plugin.log('[{0}] error: {1}'.format(self.plugin.addon_id, r.text))
             return {}
 
+
     def errorHandler(self, data):
         self.ERRORS += 1
-        msg  = data['odata.error']['message']['value']
+        msg = data['odata.error']['message']['value']
         code = str(data['odata.error']['code'])
         self.plugin.log('[{0}] version: {1} country: {2} language: {3} portability: {4}'.format(self.plugin.addon_id, self.plugin.addon_version, self.COUNTRY, self.LANGUAGE, self.PORTABILITY))
         self.plugin.log('[{0}] error: {1} ({2})'.format(self.plugin.addon_id, msg, code))
@@ -223,9 +264,9 @@ class Client:
         elif code == '3001':
             self.startUp()
         elif code == '10049':
-            self.plugin.dialog_ok(self.plugin.get_resource('signin_errormessage'))
+            self.plugin.dialog_ok(self.plugin.get_resource('signin_errormessage').get('text'))
         elif code in error_codes:
-            self.plugin.dialog_ok(self.plugin.get_resource('error_{0}'.format(code)))
+            self.plugin.dialog_ok(self.plugin.get_resource('error_{0}'.format(code)).get('text'))
         elif code in pin_codes:
             self.TOKEN = ''
-            self.plugin.dialog_ok(self.plugin.get_resource('error_{0}'.format(code)))
+            self.plugin.dialog_ok(self.plugin.get_resource('error_{0}'.format(code)).get('text'))

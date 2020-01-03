@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.dazn" version="1.4.0" name="DAZN" provider-name="Jin">
+<addon id="plugin.video.dazn" version="1.4.0" name="DAZN" provider-name="Maven85">
     <requires>
         <import addon="xbmc.python" version="2.26.0"/>
-        <import addon="script.module.inputstreamhelper" version="0.4.2"/>
-        <import addon="script.module.kodi-six" version="0.0.5"/>
+        <import addon="script.module.inputstreamhelper" version="0.3.3"/>
+		<import addon="script.module.kodi-six" version="0.1.0"/>
+		<import addon="script.module.six" version="1.11.0"/>
+        <import addon="script.common.plugin.cache" version="2.5.8"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="addon.py">
         <provides>video</provides>
@@ -12,7 +14,8 @@
     <extension point="xbmc.addon.metadata">
         <reuselanguageinvoker>true</reuselanguageinvoker>
         <news>
-- Python 3 compatibility. Thx @Goommer
+- python 3 compability
+- fixed non human readable labels
         </news>
         <assets>
             <icon>resources/icon.png</icon>
@@ -67,7 +70,6 @@ Quando vuoi. Dove vuoi.
         <platform>all</platform>
         <license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
         <website>https://www.dazn.com</website>
-        <email>[jin] at [xyz] dot [de]</email>
-        <source>https://github.com/JinRonin/plugin.video.dazn</source>
+        <source>https://github.com/Maven85/plugin.video.dazn</source>
     </extension>
 </addon>

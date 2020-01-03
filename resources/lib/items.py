@@ -1,13 +1,21 @@
 # -*- coding: utf-8 -*-
 
-from kodi_six import xbmc, xbmcgui, xbmcplugin
+from __future__ import unicode_literals
+from kodi_six.utils import py2_encode
+
+import xbmc
+import xbmcgui
+import xbmcplugin
+
 
 class Items:
+
 
     def __init__(self, plugin):
         self.cache = True
         self.video = False
         self.plugin = plugin
+
 
     def list_items(self, focus=False, upd=False, epg=False):
         if self.video:
@@ -29,14 +37,15 @@ class Items:
             except:
                 pass
 
+
     def add_item(self, item):
         verify_age = item.get('verify_age', False)
 
         data = {
             'mode': item['mode'],
-            'title': item['title'],
+            'title': py2_encode(item['title']),
             'id': item.get('id', ''),
-            'params': item.get('params',''),
+            'params': item.get('params', ''),
             'verify_age': verify_age
         }
 
@@ -70,9 +79,10 @@ class Items:
             folder = True
 
         if item.get('cm', None):
-            listitem.addContextMenuItems( item['cm'] )
+            listitem.addContextMenuItems(item['cm'])
 
         xbmcplugin.addDirectoryItem(self.plugin.addon_handle, self.plugin.build_url(data), listitem, folder)
+
 
     def play_item(self, item, name, context):
         path = item.ManifestUrl

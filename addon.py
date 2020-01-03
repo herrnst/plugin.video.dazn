@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 import sys
-if (sys.version_info[0] == 2):
-    from urlparse import urlparse, parse_qs
-else:
-    from urllib.parse import urlparse, parse_qs
+from six.moves.urllib.parse import parse_qs
 from resources.lib.common import Common
 from resources.lib.client import Client
 from resources.lib.parser import Parser
@@ -19,6 +18,7 @@ plugin = Common(
 client = Client(plugin)
 parser = Parser(plugin)
 
+
 def router(paramstring):
     args = dict(parse_qs(paramstring))
     mode = args.get('mode', ['rails'])[0]
@@ -26,7 +26,7 @@ def router(paramstring):
     id_ = args.get('id', ['home'])[0]
     params = args.get('params', [''])[0]
     verify_age = True if args.get('verify_age', [''])[0] == 'True' else False
-
+    plugin.log("params = {0}".format(params))
     if mode == 'rails':
         parser.rails_items(client.rails(id_, params), id_)
     elif 'rail' in mode:
@@ -48,6 +48,7 @@ def router(paramstring):
         plugin.open_is_settings()
     else:
         sys.exit(0)
+
 
 if __name__ == '__main__':
     if plugin.startup or not client.TOKEN:

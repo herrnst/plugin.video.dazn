@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from . import simple_requests as requests
+from __future__ import unicode_literals
+
+from .simple_requests.api import Request
+
 
 class Playback:
+
 
     def __init__(self, plugin, data):
         self.plugin = plugin
@@ -11,9 +15,11 @@ class Playback:
         self.LaUrlAuthParam = ''
         self.Cdns = []
         self.get_detail(data.get('PlaybackPrecision', {}), data.get('PlaybackDetails', []))
-    
+
+
     def clean_name(self, cdns):
         return [cdn.replace('live', '').replace('vod', '') for cdn in cdns]
+
 
     def get_detail(self, precision, details):
         if precision.get('Cdns'):
@@ -30,11 +36,12 @@ class Playback:
         if not self.ManifestUrl:
             self.parse_detail(details)
 
+
     def parse_detail(self, details, cdn=''):
         for i in details:
             if cdn == self.clean_name([i['CdnName']])[0] or not cdn:
-                r = requests.head(i['ManifestUrl'])
-                if r.status_code == 200 and r.header('Content-Type', '').startswith('application/dash+xml'):
+                r = Request(self.plugin).head(i['ManifestUrl'])
+                if r.status_code == 200 and self.plugin.get_dict_value(r.headers, 'content-type').startswith('application/dash+xml'):
                     self.ManifestUrl = i['ManifestUrl']
                     self.LaUrl = i['LaUrl']
                     self.LaUrlAuthParam = '{0}={1}'.format(i['LaUrlAuthParamName'], self.plugin.get_setting('mpx'))
