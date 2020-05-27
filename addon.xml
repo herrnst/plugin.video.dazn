@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.dazn" version="1.95.4.0" name="DAZN" provider-name="Maven85">
+<addon id="plugin.video.dazn" version="1.95.4.1" name="DAZN" provider-name="Maven85">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
         <import addon="script.module.inputstreamhelper" version="0.3.3"/>
@@ -13,8 +13,8 @@
     <extension point="xbmc.addon.metadata">
         <reuselanguageinvoker>true</reuselanguageinvoker>
         <news>
-- cache rail data in singleton list
-- refactoring
+- removed 'XBMC.' prefixed in built-in commands
+- reduced size of media
         </news>
         <assets>
             <icon>resources/icon.png</icon>
