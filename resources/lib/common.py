@@ -157,7 +157,7 @@ class Common():
     def utc2local(self, date_string):
         if str(date_string).startswith('2'):
             utc_dt = datetime(*(strptime(date_string, self.time_format)[0:6]))
-            local_ts = calendar.timegm(utc_dt.timetuple())
+            local_ts = timegm(utc_dt.timetuple())
             local_dt = datetime.fromtimestamp(local_ts)
             assert utc_dt.resolution >= timedelta(microseconds=1)
             return local_dt.replace(microsecond=utc_dt.microsecond).strftime(self.time_format)
