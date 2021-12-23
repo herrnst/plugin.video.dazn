@@ -100,7 +100,11 @@ class Common():
 
 
     def get_string(self, id_):
-        return self.get_addon().getLocalizedString(id_)
+        if id_ < 30000:
+            src = xbmc
+        else:
+            src = self.get_addon()
+        return src.getLocalizedString(id_)
 
 
     def dialog_ok(self, msg):
@@ -193,8 +197,8 @@ class Common():
 
 
     def days(self, title, now, start):
-        today = date.today()
         if start and not title == 'Live':
+            today = date.today()
             if now[:10] == start[:10]:
                 return self.get_resource('tileLabelToday', 'browseui_').get('text')
             elif str(today + timedelta(days=1)) == start[:10]:
