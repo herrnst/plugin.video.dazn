@@ -152,9 +152,7 @@ class Common():
 
 
     def timedelta_total_seconds(self, timedelta):
-        return (
-            timedelta.microseconds + 0.0 +
-            (timedelta.seconds + timedelta.days * 24 * 3600) * 10 ** 6) / 10 ** 6
+        return int((timedelta.microseconds + (timedelta.seconds + timedelta.days * 24 * 3600) * 10 ** 6) / 10 ** 6)
 
 
     def utc2local(self, date_string):
@@ -353,3 +351,17 @@ class Common():
                 self.resources = service_path
 
         return endpoint_dict
+
+
+    def set_videoinfo(self, listitem, infolabels):
+
+        listitem.setInfo('video', infolabels)
+
+        return listitem
+
+
+    def set_streaminfo(self, listitem, streamlabels):
+
+        listitem.addStreamInfo('video', streamlabels)
+
+        return listitem
