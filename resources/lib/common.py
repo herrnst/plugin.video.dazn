@@ -355,13 +355,64 @@ class Common():
 
     def set_videoinfo(self, listitem, infolabels):
 
-        listitem.setInfo('video', infolabels)
+        videoinfotag = listitem.getVideoInfoTag()
+
+        if infolabels.get('title') is not None:
+            videoinfotag.setTitle(infolabels.get('title'))
+        if infolabels.get('plot') is not None:
+            videoinfotag.setPlot(infolabels.get('plot'))
+        if infolabels.get('mpaa') is not None:
+            videoinfotag.setMpaa(infolabels.get('mpaa'))
+        if infolabels.get('genre') is not None:
+            videoinfotag.setGenres(infolabels.get('genre'))
+        if infolabels.get('studio') is not None:
+            videoinfotag.setStudios(infolabels.get('studio'))
+        if infolabels.get('episode') is not None:
+            videoinfotag.setEpisode(infolabels.get('episode'))
+        if infolabels.get('sortepisode') is not None:
+            videoinfotag.setSortEpisode(infolabels.get('sortepisode'))
+        if infolabels.get('tvshowtitle') is not None:
+            videoinfotag.setTvShowTitle(infolabels.get('tvshowtitle'))
+        if infolabels.get('premiered') is not None:
+            videoinfotag.setPremiered(infolabels.get('premiered'))
+        if infolabels.get('date') is not None:
+            videoinfotag.setDateAdded(infolabels.get('date'))
+        if infolabels.get('aired') is not None:
+            videoinfotag.setFirstAired(infolabels.get('aired'))
+        if infolabels.get('duration') is not None:
+            videoinfotag.setDuration(infolabels.get('duration'))
+        if infolabels.get('season') is not None:
+            videoinfotag.setSeason(infolabels.get('season'))
+        if infolabels.get('sortseason') is not None:
+            videoinfotag.setSortSeason(infolabels.get('sortseason'))
+        if infolabels.get('tagline') is not None:
+            videoinfotag.setTagLine(infolabels.get('tagline'))
+        if infolabels.get('mediatype') is not None:
+            videoinfotag.setMediaType(infolabels.get('mediatype'))
 
         return listitem
 
 
     def set_streaminfo(self, listitem, streamlabels):
 
-        listitem.addStreamInfo('video', streamlabels)
+        videoinfotag = listitem.getVideoInfoTag()
+        videostream = xbmc.VideoStreamDetail()
+
+        if streamlabels.get('width') is not None:
+            videostream.setWidth(streamlabels.get('width'))
+        if streamlabels.get('height') is not None:
+            videoinfotag.setHeight(streamlabels.get('height'))
+        if streamlabels.get('aspect') is not None:
+            videostream.setAspect(streamlabels.get('aspect'))
+        if streamlabels.get('duration') is not None:
+            videostream.setDuration(streamlabels.get('duration'))
+        if streamlabels.get('codec') is not None:
+            videostream.setCodec(streamlabels.get('codec'))
+        if streamlabels.get('stereoMode') is not None:
+            videostream.setStereoMode(streamlabels.get('stereoMode'))
+        if streamlabels.get('language') is not None:
+            videostream.setLanguage(streamlabels.get('language'))
+
+        videoinfotag.addVideoStream(videostream)
 
         return listitem
