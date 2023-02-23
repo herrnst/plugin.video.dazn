@@ -513,3 +513,10 @@ class Common():
         except Exception:
             pass
         return values
+
+
+    def set_stream_selection_type(self, listitem):
+
+        listitem.setProperty('inputstream.adaptive.chooser_bandwidth_max', self.max_bw)
+
+        return listitem
