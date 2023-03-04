@@ -177,6 +177,7 @@ class Client:
     def signIn(self):
         credentials = self.credential.get_credentials()
         if credentials:
+            self.HEADERS['User-Agent'] = self.plugin.get_user_agent()
             self.HEADERS['x-dazn-ua'] = '{} {}'.format(self.plugin.get_user_agent(), 'signin/4.18.4.5 hyper/0.8.4 (web; production; de)')
             self.POST_DATA = {
                 'Email': credentials['email'],
