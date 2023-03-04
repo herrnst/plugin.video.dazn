@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.dazn" version="1.95.4.13" name="DAZN" provider-name="Jin, Maven85">
+<addon id="plugin.video.dazn" version="1.95.4.14" name="DAZN" provider-name="Jin, Maven85">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
         <import addon="script.module.inputstreamhelper" version="0.5.0"/>
@@ -14,11 +14,14 @@
     <extension point="xbmc.addon.metadata">
         <reuselanguageinvoker>true</reuselanguageinvoker>
         <news>
-- move streaminfo and videoinfo retrieval to common.py
-- improved behavior when there are too many registered devices
-- set the DAZN user agent to set the client name in the registered devices
-- fixed building user agent on android
-- fixed missing PIN prompt when starting a stream via "Start from Beginning" context menu
+- generation of a UUID for Android version 11 and higher, since...
+- reset device id on logout
+- fix ListItem properties deprecations
+- show additional error message
+- dynamically determine the maximum number of devices...
+- fixed "Start from beginning" for live events
+- fixed lowercase error for "Start from beginning" feature
+- Fix login by setting User-Agent HTTP header on signIn()
         </news>
         <assets>
             <icon>resources/icon.png</icon>
