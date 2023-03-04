@@ -397,7 +397,7 @@ class Common():
             os_uname = ['Linux', 'hostname', 'kernel-ver', 'kernel-sub-ver', 'x86_64']
 
         # android
-        user_agent_suffix = 'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36'
+        user_agent_suffix = 'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36'
         if xbmc.getCondVisibility('System.Platform.Android'):
             user_agent = 'Mozilla/5.0 (Linux; Android {}; {}) {}'.format(
                     self.get_android_prop('ro.build.version.release', True) or '12',
