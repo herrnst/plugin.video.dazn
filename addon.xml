@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.dazn" version="1.95.4.16" name="DAZN" provider-name="Jin, Maven85">
+<addon id="plugin.video.dazn" version="1.95.4.17" name="DAZN" provider-name="Jin, Maven85">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
         <import addon="script.module.inputstreamhelper" version="0.5.0"/>
@@ -14,7 +14,8 @@
     <extension point="xbmc.addon.metadata">
         <reuselanguageinvoker>true</reuselanguageinvoker>
         <news>
-- colored display of unplayable streams (package permission)
+- improved package permission detection
+- use the ia property to play a buffered live stream from the beginning
         </news>
         <assets>
             <icon>resources/icon.png</icon>
