@@ -528,8 +528,5 @@ class Common():
         return values
 
 
-    def set_stream_selection_type(self, listitem):
-
-        listitem.setProperty('inputstream.adaptive.chooser_bandwidth_max', self.max_bw)
-
-        return listitem
+    def get_max_bw(self):
+        return self.max_bw
