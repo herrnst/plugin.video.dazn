@@ -530,7 +530,3 @@ class Common():
 
     def get_max_bw(self):
         return self.max_bw
-
-
-    def get_kodi_version(self):
-        return self.kodi_version
